@@ -1,5 +1,5 @@
-#[allow(unused_imports)]
 use std::io::{self, Write};
+use itertools::Itertools;
 
 fn main() {
     let mut status_code: Option<i32> = None;
@@ -42,6 +42,9 @@ fn handle_command(input: &mut String, return_status_code: &mut Option<i32>) {
                 *return_status_code = Some(status_code.unwrap().parse::<i32>().unwrap());
             }
         },
+        "echo" => {
+            println!("{}", arguments.join(" "));
+        }
         _ => {
             println!("{}: command not found", command_name.unwrap());
         }
