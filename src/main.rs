@@ -69,9 +69,11 @@ fn handle_command(input: &mut String, path: &Vec<String>, return_status_code: &m
             println!("{}", env::current_dir().unwrap().display());
         },
         "cd" => {
-            let new_working_dir = arguments.nth(0).expect("cd requires a path. Syntax: cd <path>");
+            let mut new_working_dir = arguments.nth(0).expect("cd requires a path. Syntax: cd <path>");
 
-            let set_working_dir_result = env::set_current_dir(new_working_dir);
+            let home_path = env::var("HOME").expect("HOME env variable does not exist");
+
+            let set_working_dir_result = env::set_current_dir(new_working_dir.replace('~', &home_path));
 
             if set_working_dir_result.is_err() {
                 println!("cd: {}: No such file or directory", new_working_dir);
