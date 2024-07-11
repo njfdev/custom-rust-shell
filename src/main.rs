@@ -51,7 +51,7 @@ fn handle_command(input: &mut String, path: &Vec<String>, return_status_code: &m
         },
         "type" => {
             for argument in arguments {
-                if ["exit", "echo", "type"].contains(&argument) {
+                if ["exit", "echo", "type", "pwd"].contains(&argument) {
                     println!("{} is a shell builtin", argument);
                     continue;
                 }
@@ -64,7 +64,10 @@ fn handle_command(input: &mut String, path: &Vec<String>, return_status_code: &m
                     println!("{}: not found", argument)
                 }
             }
-        }
+        },
+        "pwd" => {
+            println!("{}", env::current_dir().unwrap().display());
+        },
         _ => {
             let executable_path = search_for_executable(path, command_name.unwrap().to_owned());
 
