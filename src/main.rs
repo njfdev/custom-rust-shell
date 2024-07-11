@@ -1,7 +1,5 @@
 use std::{
-    io::{self, Write},
-    env,
-    fs
+    env, fs, io::{self, Write}, process::Command
 };
 use itertools::Itertools;
 
@@ -68,7 +66,20 @@ fn handle_command(input: &mut String, path: &Vec<String>, return_status_code: &m
             }
         }
         _ => {
-            println!("{}: command not found", command_name.unwrap());
+            let executable_path = search_for_executable(path, command_name.unwrap().to_owned());
+
+            if executable_path.is_some() {
+                let mut command_object = Command::new(executable_path.unwrap());
+
+                command_object.args(arguments);
+
+                let output = command_object.output().expect("There was an error");
+
+                io::stdout().write_all(&output.stdout).unwrap();
+                io::stderr().write_all(&output.stderr).unwrap();
+            } else {
+                println!("{}: command not found", command_name.unwrap());
+            }
         }
     }
 }
