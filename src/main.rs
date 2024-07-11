@@ -2,7 +2,9 @@
 use std::io::{self, Write};
 
 fn main() {
-    loop {
+    let mut status_code: Option<i32> = None;
+
+    while status_code.is_none() {
         print!("$ ");
         io::stdout().flush().unwrap();
 
@@ -14,11 +16,33 @@ fn main() {
         // remove newline
         input.pop();
 
-        // get the command name (1st argument)
-        let command_name = input.split(' ').nth(0);
+        handle_command(&mut input, &mut status_code);
+    }
 
-        // If command is not handled, print out a message
-        if command_name.is_some() && command_name.unwrap().len() > 0 {
+    std::process::exit(if status_code.is_some() { status_code.unwrap() } else { 0 });
+}
+
+
+fn handle_command(input: &mut String, return_status_code: &mut Option<i32>) {
+    // get the command name and arguments
+    let command_name = input.split(' ').nth(0);
+    let mut arguments = input.split(' ').skip(1);
+
+    if command_name.is_none() || command_name.unwrap().len() == 0 {
+        return;
+    }
+
+    match command_name.unwrap() {
+        "exit" => {
+            let status_code = arguments.nth(0);
+
+            if status_code.is_none() || status_code.unwrap().parse::<i32>().is_err() {
+                *return_status_code = Some(0);
+            } else {
+                *return_status_code = Some(status_code.unwrap().parse::<i32>().unwrap());
+            }
+        },
+        _ => {
             println!("{}: command not found", command_name.unwrap());
         }
     }
