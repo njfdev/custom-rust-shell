@@ -51,7 +51,7 @@ fn handle_command(input: &mut String, path: &Vec<String>, return_status_code: &m
         },
         "type" => {
             for argument in arguments {
-                if ["exit", "echo", "type", "pwd"].contains(&argument) {
+                if ["exit", "echo", "type", "pwd", "cd"].contains(&argument) {
                     println!("{} is a shell builtin", argument);
                     continue;
                 }
@@ -67,6 +67,15 @@ fn handle_command(input: &mut String, path: &Vec<String>, return_status_code: &m
         },
         "pwd" => {
             println!("{}", env::current_dir().unwrap().display());
+        },
+        "cd" => {
+            let new_working_dir = arguments.nth(0).expect("cd requires a path. Syntax: cd <path>");
+
+            let set_working_dir_result = env::set_current_dir(new_working_dir);
+
+            if set_working_dir_result.is_err() {
+                println!("cd: {}: No such file or directory", new_working_dir);
+            }
         },
         _ => {
             let executable_path = search_for_executable(path, command_name.unwrap().to_owned());
