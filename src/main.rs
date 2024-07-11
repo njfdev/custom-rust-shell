@@ -44,6 +44,15 @@ fn handle_command(input: &mut String, return_status_code: &mut Option<i32>) {
         },
         "echo" => {
             println!("{}", arguments.join(" "));
+        },
+        "type" => {
+            for argument in arguments {
+                if ["exit", "echo", "type"].contains(&argument) {
+                    println!("{} is a shell builtin", argument);
+                } else {
+                    println!("{}: not found", argument);
+                }
+            }
         }
         _ => {
             println!("{}: command not found", command_name.unwrap());
