@@ -1,7 +1,9 @@
-use std::{
-    env, fs, io::{self, Write}, process::Command
-};
 use itertools::Itertools;
+use std::{
+    env, fs,
+    io::{self, Write},
+    process::Command,
+};
 
 fn main() {
     let mut status_code: Option<i32> = None;
@@ -23,9 +25,12 @@ fn main() {
         handle_command(&mut input, &path, &mut status_code);
     }
 
-    std::process::exit(if status_code.is_some() { status_code.unwrap() } else { 0 });
+    std::process::exit(if status_code.is_some() {
+        status_code.unwrap()
+    } else {
+        0
+    });
 }
-
 
 fn handle_command(input: &mut String, path: &Vec<String>, return_status_code: &mut Option<i32>) {
     // get the command name and arguments
@@ -45,10 +50,10 @@ fn handle_command(input: &mut String, path: &Vec<String>, return_status_code: &m
             } else {
                 *return_status_code = Some(status_code.unwrap().parse::<i32>().unwrap());
             }
-        },
+        }
         "echo" => {
             println!("{}", arguments.join(" "));
-        },
+        }
         "type" => {
             for argument in arguments {
                 if ["exit", "echo", "type", "pwd", "cd"].contains(&argument) {
@@ -64,21 +69,24 @@ fn handle_command(input: &mut String, path: &Vec<String>, return_status_code: &m
                     println!("{}: not found", argument)
                 }
             }
-        },
+        }
         "pwd" => {
             println!("{}", env::current_dir().unwrap().display());
-        },
+        }
         "cd" => {
-            let mut new_working_dir = arguments.nth(0).expect("cd requires a path. Syntax: cd <path>");
+            let new_working_dir = arguments
+                .nth(0)
+                .expect("cd requires a path. Syntax: cd <path>");
 
             let home_path = env::var("HOME").expect("HOME env variable does not exist");
 
-            let set_working_dir_result = env::set_current_dir(new_working_dir.replace('~', &home_path));
+            let set_working_dir_result =
+                env::set_current_dir(new_working_dir.replace('~', &home_path));
 
             if set_working_dir_result.is_err() {
                 println!("cd: {}: No such file or directory", new_working_dir);
             }
-        },
+        }
         _ => {
             let executable_path = search_for_executable(path, command_name.unwrap().to_owned());
 
@@ -98,7 +106,6 @@ fn handle_command(input: &mut String, path: &Vec<String>, return_status_code: &m
     }
 }
 
-
 fn decode_path() -> Vec<String> {
     let path = env::var("PATH");
 
@@ -108,7 +115,6 @@ fn decode_path() -> Vec<String> {
 
     path.unwrap().split(":").map(|s| s.to_string()).collect()
 }
-
 
 fn search_for_executable(paths: &Vec<String>, executable_name: String) -> Option<String> {
     for path in paths {
